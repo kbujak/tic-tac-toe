@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Random;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import static pl.bujak.moje.Print.*;
 
 /**
  *
