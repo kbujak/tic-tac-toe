@@ -21,16 +21,20 @@ public class Game {
     private List<Button> buttonList;
     private boolean gameStarted = false;
     private int turnCount;
-    private int[][] virtualBoard = 
-        { {-1,-1,-1},
-          {-1,-1,-1},
-          {-1,-1,-1}
-        };
+    private int[][] virtualBoard = new int[15][15];
     
     Game(List buttonList){
         this.buttonList = buttonList;
         setPlayer(1);
         setPlayer(2);
+        setBoard();
+    }
+    private void setBoard(){
+    	for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
+				virtualBoard[i][j] = -1;
+			}
+		}
     }
     
     private void setPlayer(int id){
@@ -104,8 +108,8 @@ public class Game {
                     btn.setText("");
                 }
                 
-                for(int i = 0; i < 3; i++){
-                    for(int j = 0; j < 3; j++){
+                for(int i = 0; i < 15; i++){
+                    for(int j = 0; j < 15; j++){
                         virtualBoard[i][j] = -1;
                     }
                 }
@@ -113,12 +117,12 @@ public class Game {
                 turnCount = 0;
                 return "";
                 
-            }else if (turnCount >= 9){
+            }else if (turnCount >= 225){
                 for (Button btn: buttonList){
                     btn.setText("");
                 }
-                for(int i = 0; i < 3; i++){
-                    for(int j = 0; j < 3; j++){
+                for(int i = 0; i < 15; i++){
+                    for(int j = 0; j < 15; j++){
                         virtualBoard[i][j] = -1;
                     }
                 }
@@ -130,17 +134,107 @@ public class Game {
         return text;
     }
     
-    private boolean checkBoard(int signValue){
-        return ((virtualBoard[0][0] == signValue && virtualBoard[0][1] == signValue && virtualBoard[0][2] == signValue) ||
-           (virtualBoard[1][0] == signValue && virtualBoard[1][1] == signValue && virtualBoard[1][2] == signValue) ||
-           (virtualBoard[2][0] == signValue && virtualBoard[2][1] == signValue && virtualBoard[2][2] == signValue) ||
-           (virtualBoard[0][0] == signValue && virtualBoard[1][0] == signValue && virtualBoard[2][0] == signValue) ||
-           (virtualBoard[0][1] == signValue && virtualBoard[1][1] == signValue && virtualBoard[2][1] == signValue) ||
-           (virtualBoard[0][2] == signValue && virtualBoard[1][2] == signValue && virtualBoard[2][2] == signValue) ||
-           (virtualBoard[0][0] == signValue && virtualBoard[1][1] == signValue && virtualBoard[2][2] == signValue) ||
-           (virtualBoard[0][2] == signValue && virtualBoard[1][1] == signValue && virtualBoard[2][0] == signValue)
-                );   
-    }
+    private boolean checkBoard(int signValue) {
+
+		if (checkHorizontal(signValue))
+			return true;
+		if (checkVertical(signValue))
+			return true;
+		if (checkSkew(signValue))
+			return true;
+
+		return false;
+	}
+
+	private boolean checkHorizontal(int signValue) {
+		int counter = 0;
+		for (int row = 0; row < 15; row++) {
+			counter = 0;
+			for (int i = 0; i < 15; i++) {
+				if (virtualBoard[row][i] == signValue){
+					counter++;
+					if(counter == 5)
+						return true;
+				}
+				else
+					counter = 0;
+			}
+		}
+
+		return counter >= 5;
+	}
+
+	private boolean checkVertical(int signValue) {
+		int counter = 0;
+
+		for (int column = 0; column < 15; column++) {
+			counter = 0;
+			for (int i = 0; i < 15; i++) {
+				if (virtualBoard[i][column] == signValue){
+					counter++;
+					if(counter == 5)
+						return true;
+				}
+				else
+					counter = 0;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean checkSkew(int signValue) {
+		int counter = 0;
+		int dim = 15;
+
+		for( int k = 0 ; k < dim * 2 ; k++ ) {
+	        for( int j = 0 ; j <= k ; j++ ) {
+	            int i = k - j;
+	            if( i < dim && j < dim ) {
+	            	if (virtualBoard[i][j] == signValue){
+						counter++;
+						if(counter == 5)
+							return true;
+					}
+					else
+						counter = 0;
+	            }
+	        }
+	        counter = 0;
+	    }
+		
+		
+		
+		for(int i=10; i>=0; i--){
+			int k=0;
+			for(int j=i; j<15; j++, k++){
+				if (virtualBoard[j][k] == signValue){
+					counter++;
+					if(counter == 5)
+						return true;
+				}
+				else
+					counter = 0;
+			}
+			counter = 0;
+		}
+		
+		for(int i=10; i>=0; i--){
+			int k=0;
+			for(int j=i; j<15; j++, k++){
+				if (virtualBoard[k][j] == signValue){
+					counter++;
+					if(counter == 5)
+						return true;
+				}
+				else
+					counter = 0;
+			}
+			counter = 0;
+		}
+
+		return false;
+	}
     
     private void isPlayerWinner(Player currentPlayer){
         if (currentPlayer.getScore() == 3){

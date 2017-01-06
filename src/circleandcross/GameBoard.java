@@ -24,24 +24,20 @@ public class GameBoard extends Application{
     public void start(Stage stage) throws Exception {
         root = new GridPane();
         
-        scene = new Scene(root,300,500);
+        scene = new Scene(root,800,800);
         scene.getStylesheets().add(
         GameBoard.class.getResource("/CSS/GraphicSource.css").toExternalForm());
         
-        stage.setTitle("K√≥≈Çko i krzy≈ºyk");
+        stage.setTitle("KÛ≥ko i krzyøyk");
         stage.setScene(scene);
         stage.centerOnScreen();
         stage.show();
         
-        setGameField(0, 0);
-        setGameField(1, 0);
-        setGameField(2, 0);
-        setGameField(0, 1);
-        setGameField(1, 1);
-        setGameField(2, 1);
-        setGameField(0, 2);
-        setGameField(1, 2);
-        setGameField(2, 2);
+        for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
+				setGameField(i, j);
+			}
+		}
         
         game = new Game(buttonList);
         
@@ -57,15 +53,15 @@ public class GameBoard extends Application{
             }
         
     });
-        root.add(newGame, 1, 6,2, 1);
+        root.add(newGame, 1, 16,2, 1);
         
         
         VBox scoreTable = new VBox(30);
         scoreTable.setPadding(new Insets(15,15,15,15));
         scoreTable.setStyle("-fx-border-color: #000000;");
-        scoreTable.setMinHeight(100);
-        scoreTable.setMinWidth(270);
-        root.add(scoreTable, 0, 4,3, 2);
+        scoreTable.setMinHeight(200);
+        scoreTable.setMinWidth(400);
+        root.add(scoreTable, 0, 16,3, 2);
         
         HBox p1Data = new HBox(80);
         p1Data.getChildren().addAll(game.getPlayer(1).getScoreName(),
@@ -80,8 +76,8 @@ public class GameBoard extends Application{
     private void setGameField(int col, int row){
         Button btn = new Button();
         buttonList.add(btn);
-        btn.setMinWidth(80);
-        btn.setMinHeight(80);
+        btn.setMinWidth(30);
+        btn.setMinHeight(30);
         root.add(btn, col, row);
         
         btn.setOnMouseClicked(new EventHandler<MouseEvent>(){
@@ -90,7 +86,7 @@ public class GameBoard extends Application{
                 if (game.isGameStarted()){
                     String sign = game.makeTurn(btn.getText(), row, col);
                     btn.setText(sign);
-                    btn.setFont(Font.font(30));
+                    btn.setFont(Font.font(10));
                 }
             }
             
