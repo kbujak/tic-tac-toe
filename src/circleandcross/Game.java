@@ -5,6 +5,9 @@
  */
 package circleandcross;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 import javafx.scene.control.Alert;
@@ -21,7 +24,7 @@ public class Game {
     private List<Button> buttonList;
     private boolean gameStarted = false;
     private int turnCount;
-    private int[][] virtualBoard = new int[15][15];
+    int[][] virtualBoard = new int[15][15];
     
     Game(List buttonList){
         this.buttonList = buttonList;
@@ -80,59 +83,64 @@ public class Game {
         }
     }
     
-    public String makeTurn(String text, int row, int col){
-        if (text.equals("")){
-            turnCount++;
-            Player currentPlayer;
-            Player otherPlayer;
-            if (getPlayer(1).getTurn()){
-                currentPlayer = getPlayer(1);
-                otherPlayer = getPlayer(2);
-            }else{
-                currentPlayer = getPlayer(2);
-                otherPlayer = getPlayer(1);
-            }
-            if (currentPlayer.getSign() == Sign.CIRCLE){
-                text = "O";
-                virtualBoard[row][col] = 0;
-            }else{
-                text = "X";
-                virtualBoard[row][col] = 1;
-            }
-            currentPlayer.setTurn(false);
-            otherPlayer.setTurn(true);
-            
-            if(checkBoard(currentPlayer.getSign().ordinal())){
-                currentPlayer.addPoint();
-                for (Button btn: buttonList){
-                    btn.setText("");
-                }
-                
-                for(int i = 0; i < 15; i++){
-                    for(int j = 0; j < 15; j++){
-                        virtualBoard[i][j] = -1;
-                    }
-                }
-                isPlayerWinner(currentPlayer);
-                turnCount = 0;
-                return "";
-                
-            }else if (turnCount >= 225){
-                for (Button btn: buttonList){
-                    btn.setText("");
-                }
-                for(int i = 0; i < 15; i++){
-                    for(int j = 0; j < 15; j++){
-                        virtualBoard[i][j] = -1;
-                    }
-                }
-                turnCount = 0;
-                return "";
-            }
-                     
-        }
-        return text;
-    }
+    
+    
+    
+//    public String makeTurn(String text, int row, int col, boolean circle){
+//        if (text.equals("")){
+//        	
+//            turnCount++;
+//            Player currentPlayer;
+//            Player otherPlayer;
+//            if (getPlayer(1).getTurn()){
+//                currentPlayer = getPlayer(1);
+//                otherPlayer = getPlayer(2);
+//            }else{
+//                currentPlayer = getPlayer(2);
+//                otherPlayer = getPlayer(1);
+//            }
+//            if (currentPlayer.getSign() == Sign.CIRCLE){
+//                text = "O";
+//                virtualBoard[row][col] = 0;
+//            }else{
+//                text = "X";
+//                virtualBoard[row][col] = 1;
+//            }
+//            
+//            currentPlayer.setTurn(false);
+//            otherPlayer.setTurn(true);
+//            
+//            if(checkBoard(currentPlayer.getSign().ordinal())){
+//                currentPlayer.addPoint();
+//                for (Button btn: buttonList){
+//                    btn.setText("");
+//                }
+//                
+//                for(int i = 0; i < 15; i++){
+//                    for(int j = 0; j < 15; j++){
+//                        virtualBoard[i][j] = -1;
+//                    }
+//                }
+//                isPlayerWinner(currentPlayer);
+//                turnCount = 0;
+//                return "";
+//                
+//            }else if (turnCount >= 225){
+//                for (Button btn: buttonList){
+//                    btn.setText("");
+//                }
+//                for(int i = 0; i < 15; i++){
+//                    for(int j = 0; j < 15; j++){
+//                        virtualBoard[i][j] = -1;
+//                    }
+//                }
+//                turnCount = 0;
+//                return "";
+//            }
+//                     
+//        }
+//        return text;
+//    }
     
     private boolean checkBoard(int signValue) {
 
