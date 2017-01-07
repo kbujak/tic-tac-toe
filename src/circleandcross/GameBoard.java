@@ -27,7 +27,7 @@ public class GameBoard extends Application implements Runnable{
 	private List<Button> buttonList = new ArrayList<>();
 	private Scene scene;
 	private GridPane root;
-	private Game game;
+	private Game game = new Game(buttonList);
 
 	private String ip = "localhost";
 	private int port = 22222;
@@ -52,7 +52,7 @@ public class GameBoard extends Application implements Runnable{
 		ip = "localhost";
 		System.out.println("Please input the port: ");
 		//port = scanner.nextInt();
-		port = 6000;
+		port = 6004;
 		while (port < 1 || port > 65535) {
 			System.out.println("The port you entered was invalid, please input another port: ");
 			port = scanner.nextInt();
@@ -88,60 +88,12 @@ public class GameBoard extends Application implements Runnable{
 	private void tick() {
 		if (errors >= 10) unableToCommunicateWithOpponent = true;
 
-		if (!yourTurn && !unableToCommunicateWithOpponent) {
-			try {
-				//odczytujê i rozkodowujê informacjê
-				String info = dis.readUTF();
-				String[] split = info.split("&");
-				//System.out.println("Odczyta³em " +info);
-			    String rowRead = split[0];
-			    String colRead = split[1];
-			    
-			    int row = Integer.parseInt(rowRead);
-			    int col = Integer.parseInt(colRead);
-			    
-			    
-				
-				if (circle) {
-					game.virtualBoard[row][col] = 1;
-					System.out.println("IFzaznaczam vB["+row+"]"+"["+col+"] --- "+15 * row + col );
-					System.out.println(15 * row + col );
-
-					Platform.runLater(new Runnable() {
-						Button btn = buttonList.get(15 * col + row);
-						
-						
-						@Override
-						public void run() {
-							btn.setText("X");
-						}
-					});
-				}
-
-				else {
-					game.virtualBoard[row][col] = 0;
-					System.out.println("ELSEzaznaczam vB["+row+"]"+"["+col+"] --- ");
-					System.out.println(15 * col + row );
-					
-					Platform.runLater(new Runnable() {
-						Button btn = buttonList.get(15 * col + row);
-
-						@Override
-						public void run() {
-							btn.setText("O");
-						}
-					});
-				}
-			    
-				int sign = (circle) ? 0 : 1;
-				if(game.checkBoard(sign))
-					System.out.println("wygra³eœ");
-				
-				yourTurn = true;
-			} catch (IOException e) {
-				e.printStackTrace();
-				errors++;
-			}
+		if (!unableToCommunicateWithOpponent) {
+			
+			game.getDataFromSocket(dis);
+			
+			
+			
 		}
 	}
 	
@@ -180,6 +132,11 @@ public class GameBoard extends Application implements Runnable{
 		}
 		yourTurn = true;
 		circle = false;
+
+		
+		//sets player1 as cross
+		game.initializePlayerServer();
+		
 	}
 	
 	
@@ -203,7 +160,7 @@ public class GameBoard extends Application implements Runnable{
 			}
 		}
 
-		game = new Game(buttonList);
+		//game = new Game(buttonList);
 
 		Button newGame = new Button("New Game");
 		newGame.setId("newGameBtn");
@@ -217,7 +174,7 @@ public class GameBoard extends Application implements Runnable{
 			}
 
 		});
-		game.start();
+		//game.start();
 		root.add(newGame, 1, 6, 2, 1);
 
 		VBox scoreTable = new VBox(30);
@@ -246,39 +203,8 @@ public class GameBoard extends Application implements Runnable{
 			@Override
 			public void handle(MouseEvent event) {
 				if (game.isGameStarted()) {
-					if (accepted && yourTurn && !unableToCommunicateWithOpponent) {
-						// String sign = game.makeTurn(btn.getText(), row, col);
-						// circle);
-
-						// btn.setText(sign);
-						// btn.setFont(Font.font(10));
-
-						if (circle) {
-							game.virtualBoard[row][col] = 0;
-							btn.setText("O");
-
-						}
-
-						else {
-							game.virtualBoard[row][col] = 1;
-							btn.setText("X");
-						}
-
-						
-						int sign = (circle) ? 0 : 1;
-						if(game.checkBoard(sign))
-							System.out.println("wygra³eœ");
-						yourTurn = false;
-						String info = "" + row + "&" + col;
-
-						try {
-							dos.writeUTF(info);
-							System.out.println("Wysy³am "+info);
-							dos.flush();
-						} catch (IOException e) {
-							errors++;
-							e.printStackTrace();
-						}
+					if (accepted  && !unableToCommunicateWithOpponent) {
+						game.sendDataToSocket(row, col, dos, btn);
 
 					}
 

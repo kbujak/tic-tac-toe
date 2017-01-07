@@ -10,6 +10,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 //import static pl.bujak.moje.Print.*;
@@ -45,6 +47,7 @@ public class Game {
             p1 = new Player();
         }else {
             p2 = new Player();
+
         }
     }
     
@@ -59,20 +62,31 @@ public class Game {
     public void start(){
         new NameCreator(getPlayer(1),getPlayer(2));
         gameStarted = true;
-        shuffleSigns();
-        shuffleTurns();
+        if(p1.getSign() != null )
+        	p1.setSign(Sign.values()[0]);
+        //p2.setSign(Sign.values()[1]);
+        
+        
+       // shuffleSigns();
+       // shuffleTurns();
     }
     
     public boolean isGameStarted(){
         return gameStarted;
     }
     
-    private void shuffleSigns(){
-        Random rand = new Random();
-        int idSign = rand.nextInt(Sign.values().length);
-        p1.setSign(Sign.values()[idSign]);
-        p2.setSign(Sign.values()[1 - idSign]);
+    public void initializePlayerServer(){
+    	p1.setSign(Sign.values()[1]);
+    	p1.setTurn(true);
+    	System.out.println("dd");
     }
+    
+//    private void shuffleSigns(){
+//        Random rand = new Random();
+//        int idSign = rand.nextInt(Sign.values().length);
+//        p1.setSign(Sign.values()[idSign]);
+//        p2.setSign(Sign.values()[1 - idSign]);
+//    }
     
     private void shuffleTurns(){
         Random rand = new Random();
@@ -83,64 +97,170 @@ public class Game {
         }
     }
     
+	public void sendDataToSocket(int row, int col, DataOutputStream dos, Button btn) {
+		Sign sign = p1.getSign(); 
+		boolean yourTurn = p1.getTurn();
+		
+		if(yourTurn){
+			if (sign == Sign.CIRCLE) {
+				virtualBoard[row][col] = 0;
+				btn.setText("O");
+
+			}
+
+			else {
+				virtualBoard[row][col] = 1;
+				btn.setText("X");
+			}
+
+//			int sign = (circle) ? 0 : 1;
+//			if (game.checkBoard(sign))
+//				System.out.println("wygra³eœ");
+			
+			//yourTurn = false;
+			int signInt = (sign == Sign.CIRCLE) ? 0 : 1;
+			if(checkBoard(signInt))
+				System.out.println("wygra³eœ");
+			
+			p1.setTurn(false);
+			String info = "" + row + "&" + col;
+
+			try {
+				dos.writeUTF(info);
+				System.out.println("Wysy³am " + info);
+				dos.flush();
+			} catch (IOException e) {
+				//errors++;
+				e.printStackTrace();
+			}
+		}
+
+	}
+    
+    
+	public void getDataFromSocket(DataInputStream dis) {
+		Sign sign = p1.getSign();
+		boolean yourTurn = p1.getTurn();
+
+		if (!yourTurn) {
+			try {
+				// odczytujê i rozkodowujê informacjê
+				String info = dis.readUTF();
+				String[] split = info.split("&");
+				// System.out.println("Odczyta³em " +info);
+				String rowRead = split[0];
+				String colRead = split[1];
+
+				int row = Integer.parseInt(rowRead);
+				int col = Integer.parseInt(colRead);
+
+				if (sign == Sign.CIRCLE) {
+					virtualBoard[row][col] = 1;
+					System.out.println("IFzaznaczam vB[" + row + "]" + "[" + col + "] --- " + 15 * row + col);
+					System.out.println(15 * row + col);
+
+					Platform.runLater(new Runnable() {
+						Button btn = buttonList.get(15 * col + row);
+
+						@Override
+						public void run() {
+							btn.setText("X");
+						}
+					});
+					
+					
+				}
+
+				else {
+					virtualBoard[row][col] = 0;
+					System.out.println("ELSEzaznaczam vB[" + row + "]" + "[" + col + "] --- ");
+					System.out.println(15 * col + row);
+
+					Platform.runLater(new Runnable() {
+						Button btn = buttonList.get(15 * col + row);
+
+						@Override
+						public void run() {
+							btn.setText("O");
+						}
+					});
+				}
+
+//				int sign = (circle) ? 0 : 1;
+//				if (game.checkBoard(sign))
+//					System.out.println("wygra³eœ");
+
+				//yourTurn = true;
+				int signInt = (sign == Sign.CIRCLE) ? 0 : 1;
+				if(checkBoard(signInt))
+					System.out.println("wygra³eœ");
+				
+				p1.setTurn(true);
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+				//errors++;
+			}
+		}
+	}
     
     
     
-//    public String makeTurn(String text, int row, int col, boolean circle){
-//        if (text.equals("")){
-//        	
-//            turnCount++;
-//            Player currentPlayer;
-//            Player otherPlayer;
-//            if (getPlayer(1).getTurn()){
-//                currentPlayer = getPlayer(1);
-//                otherPlayer = getPlayer(2);
-//            }else{
-//                currentPlayer = getPlayer(2);
-//                otherPlayer = getPlayer(1);
-//            }
-//            if (currentPlayer.getSign() == Sign.CIRCLE){
-//                text = "O";
-//                virtualBoard[row][col] = 0;
-//            }else{
-//                text = "X";
-//                virtualBoard[row][col] = 1;
-//            }
-//            
-//            currentPlayer.setTurn(false);
-//            otherPlayer.setTurn(true);
-//            
-//            if(checkBoard(currentPlayer.getSign().ordinal())){
-//                currentPlayer.addPoint();
-//                for (Button btn: buttonList){
-//                    btn.setText("");
-//                }
-//                
-//                for(int i = 0; i < 15; i++){
-//                    for(int j = 0; j < 15; j++){
-//                        virtualBoard[i][j] = -1;
-//                    }
-//                }
-//                isPlayerWinner(currentPlayer);
-//                turnCount = 0;
-//                return "";
-//                
-//            }else if (turnCount >= 225){
-//                for (Button btn: buttonList){
-//                    btn.setText("");
-//                }
-//                for(int i = 0; i < 15; i++){
-//                    for(int j = 0; j < 15; j++){
-//                        virtualBoard[i][j] = -1;
-//                    }
-//                }
-//                turnCount = 0;
-//                return "";
-//            }
-//                     
-//        }
-//        return text;
-//    }
+    public String makeTurn(String text, int row, int col, boolean circle){
+        if (text.equals("")){
+        	
+            turnCount++;
+            Player currentPlayer;
+            Player otherPlayer;
+            if (getPlayer(1).getTurn()){
+                currentPlayer = getPlayer(1);
+                otherPlayer = getPlayer(2);
+            }else{
+                currentPlayer = getPlayer(2);
+                otherPlayer = getPlayer(1);
+            }
+            if (currentPlayer.getSign() == Sign.CIRCLE){
+                text = "O";
+                virtualBoard[row][col] = 0;
+            }else{
+                text = "X";
+                virtualBoard[row][col] = 1;
+            }
+            
+            currentPlayer.setTurn(false);
+            otherPlayer.setTurn(true);
+            
+            if(checkBoard(currentPlayer.getSign().ordinal())){
+                currentPlayer.addPoint();
+                for (Button btn: buttonList){
+                    btn.setText("");
+                }
+                
+                for(int i = 0; i < 15; i++){
+                    for(int j = 0; j < 15; j++){
+                        virtualBoard[i][j] = -1;
+                    }
+                }
+                isPlayerWinner(currentPlayer);
+                turnCount = 0;
+                return "";
+                
+            }else if (turnCount >= 225){
+                for (Button btn: buttonList){
+                    btn.setText("");
+                }
+                for(int i = 0; i < 15; i++){
+                    for(int j = 0; j < 15; j++){
+                        virtualBoard[i][j] = -1;
+                    }
+                }
+                turnCount = 0;
+                return "";
+            }
+                     
+        }
+        return text;
+    }
     
      boolean checkBoard(int signValue) {
 

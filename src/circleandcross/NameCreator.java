@@ -37,7 +37,7 @@ public class NameCreator{
     public NameCreator(Player p1, Player p2) {
         stage = new Stage();
         root = new GridPane();
-        scene = new Scene(root,300,150);
+        scene = new Scene(root,400,150);
         player1TextField = new TextField();
         player2TextField = new TextField();
         this.p1 = p1;
@@ -54,17 +54,18 @@ public class NameCreator{
         stage.setScene(scene);
         stage.show();
         
-        Label player1 = new Label("Player1");
+        Label player1 = new Label("Player name");
         Label player2 = new Label("Player2");
         root.add(player1, 0, 0);
         root.add(player2, 0, 1);        
 
         root.add(player1TextField, 1, 0);
-        root.add(player2TextField, 1, 1);
+       // root.add(player2TextField, 1, 1);
         
-        p1.setName("lolek");
-        p2.setName("bolek");
-        stage.close();
+        p2.setName("Waiting for oponent");
+       
+        //p2.setSign(Sign.values()[0]);
+        
         
         Button btn = new Button("Accept");
         btn.setOnMouseClicked(new EventHandler<MouseEvent>(){
@@ -72,11 +73,11 @@ public class NameCreator{
             public void handle(MouseEvent event) {
                 if (p1 != null && p2 != null){
                     String p1Name = player1TextField.getText();
-                    String p2Name = player2TextField.getText();
+                    //String p2Name = player2TextField.getText();
                     
-                    if (!p1Name.equals("") && !p2Name.equals("")){
+                    if (!p1Name.equals("") ){
                         p1.setName(p1Name);
-                        p2.setName(p2Name);
+                        //p2.setName(p2Name);
                         stage.close();
                     }else{
                         emptyTextFieldAlert();
