@@ -52,7 +52,7 @@ public class GameBoard extends Application implements Runnable{
 		ip = "localhost";
 		System.out.println("Please input the port: ");
 		//port = scanner.nextInt();
-		port = 6010;
+		port = 6000;
 		while (port < 1 || port > 65535) {
 			System.out.println("The port you entered was invalid, please input another port: ");
 			port = scanner.nextInt();
@@ -73,7 +73,8 @@ public class GameBoard extends Application implements Runnable{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("Trying to read info");
+			//System.out.println("Trying to read info");
+			//System.out.println(circle);
 
 			tick();
 			if (!circle && !accepted) {
@@ -92,19 +93,38 @@ public class GameBoard extends Application implements Runnable{
 				//odczytujê i rozkodowujê informacjê
 				String info = dis.readUTF();
 				String[] split = info.split("&");
-				System.out.println("Odczyta³em " +info);
+				//System.out.println("Odczyta³em " +info);
 			    String rowRead = split[0];
 			    String colRead = split[1];
 			    
 			    int row = Integer.parseInt(rowRead);
 			    int col = Integer.parseInt(colRead);
-				
+			    
+			    
 				
 				if (circle) {
-					game.virtualBoard[row][col] = 0;
+					game.virtualBoard[row][col] = 1;
+					System.out.println("IFzaznaczam vB["+row+"]"+"["+col+"] --- "+15 * row + col );
+					System.out.println(15 * row + col );
 
 					Platform.runLater(new Runnable() {
-						Button btn = buttonList.get(15 * row + col);
+						Button btn = buttonList.get(15 * col + row);
+						
+						
+						@Override
+						public void run() {
+							btn.setText("X");
+						}
+					});
+				}
+
+				else {
+					game.virtualBoard[row][col] = 0;
+					System.out.println("ELSEzaznaczam vB["+row+"]"+"["+col+"] --- ");
+					System.out.println(15 * col + row );
+					
+					Platform.runLater(new Runnable() {
+						Button btn = buttonList.get(15 * col + row);
 
 						@Override
 						public void run() {
@@ -112,19 +132,11 @@ public class GameBoard extends Application implements Runnable{
 						}
 					});
 				}
-
-				else {
-					game.virtualBoard[row][col] = 1;
-					Platform.runLater(new Runnable() {
-						Button btn = buttonList.get(15 * row + col);
-
-						@Override
-						public void run() {
-							btn.setText("X");
-						}
-					});
-				}
 			    
+				int sign = (circle) ? 0 : 1;
+				if(game.checkBoard(sign))
+					System.out.println("wygra³eœ");
+				
 				yourTurn = true;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -252,6 +264,10 @@ public class GameBoard extends Application implements Runnable{
 							btn.setText("X");
 						}
 
+						
+						int sign = (circle) ? 0 : 1;
+						if(game.checkBoard(sign))
+							System.out.println("wygra³eœ");
 						yourTurn = false;
 						String info = "" + row + "&" + col;
 

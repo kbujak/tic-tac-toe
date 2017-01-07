@@ -50,7 +50,7 @@ public class NameCreator{
         root.setHgap(5);
         root.setVgap(15);
         root.setPadding(new Insets(15,15,15,15));
-        stage.setTitle("Kółko i krzyżyk");
+        stage.setTitle("efwefwef");
         stage.setScene(scene);
         stage.show();
         
@@ -61,6 +61,10 @@ public class NameCreator{
 
         root.add(player1TextField, 1, 0);
         root.add(player2TextField, 1, 1);
+        
+        p1.setName("lolek");
+        p2.setName("bolek");
+        stage.close();
         
         Button btn = new Button("Accept");
         btn.setOnMouseClicked(new EventHandler<MouseEvent>(){

@@ -142,7 +142,7 @@ public class Game {
 //        return text;
 //    }
     
-    private boolean checkBoard(int signValue) {
+     boolean checkBoard(int signValue) {
 
 		if (checkHorizontal(signValue))
 			return true;
