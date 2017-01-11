@@ -9,7 +9,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Random;
+//import java.util.Random;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -28,12 +28,15 @@ public class Game {
     private int turnCount;
     int[][] virtualBoard = new int[15][15];
     
-    Game(List buttonList){
+    
+    // to jest wzorzec builder? tworzy nowe obiekty p1, p2 :)
+    Game(List<Button> buttonList){
         this.buttonList = buttonList;
-        setPlayer(1);
-        setPlayer(2);
+        p1 = new Player();
+        p2 = new Player();
         setBoard();
     }
+    
     private void setBoard(){
     	for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
@@ -42,14 +45,15 @@ public class Game {
 		}
     }
     
-    private void setPlayer(int id){
-        if (id == 1){
-            p1 = new Player();
-        }else {
-            p2 = new Player();
-
-        }
-    }
+    // po  co to jest? 
+//    private void setPlayer(int id){
+//        if (id == 1){
+//            p1 = new Player();
+//        }else {
+//            p2 = new Player();
+//
+//        }
+//    }
     
     public Player getPlayer(int id){
         if (id == 1){
@@ -88,14 +92,14 @@ public class Game {
 //        p2.setSign(Sign.values()[1 - idSign]);
 //    }
     
-    private void shuffleTurns(){
-        Random rand = new Random();
-        int id = rand.nextInt(2);
-        if (id == 0){
-            p1.setTurn(true);
-            p2.setTurn(false);
-        }
-    }
+//    private void shuffleTurns(){
+//        Random rand = new Random();
+//        int id = rand.nextInt(2);
+//        if (id == 0){
+//            p1.setTurn(true);
+//            p2.setTurn(false);
+//        }
+//    }
     
 	public void sendDataToSocket(int row, int col, DataOutputStream dos, Button btn) {
 		Sign sign = p1.getSign(); 
@@ -243,7 +247,7 @@ public class Game {
                 }
                 isPlayerWinner(currentPlayer);
                 turnCount = 0;
-                return "";
+                text = "";
                 
             }else if (turnCount >= 225){
                 for (Button btn: buttonList){
@@ -255,7 +259,7 @@ public class Game {
                     }
                 }
                 turnCount = 0;
-                return "";
+                text = "";
             }
                      
         }
@@ -264,14 +268,10 @@ public class Game {
     
      boolean checkBoard(int signValue) {
 
-		if (checkHorizontal(signValue))
+		if (checkHorizontal(signValue) || checkVertical(signValue) || checkSkew(signValue))
 			return true;
-		if (checkVertical(signValue))
-			return true;
-		if (checkSkew(signValue))
-			return true;
-
-		return false;
+		else
+			return false;
 	}
 
 	private boolean checkHorizontal(int signValue) {
@@ -364,11 +364,11 @@ public class Game {
 		return false;
 	}
     
-    private void isPlayerWinner(Player currentPlayer){
-        if (currentPlayer.getScore() == 3){
+    private void isPlayerWinner(Player player){
+        if (player.getScore() == 3){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Winner");
-            alert.setHeaderText(currentPlayer.getName() + " wins this match");
+            alert.setHeaderText(player.getName() + " wins this match");
             alert.setContentText("Congratulations");
             getPlayer(1).clear();
             getPlayer(2).clear();

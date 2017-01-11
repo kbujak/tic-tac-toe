@@ -19,7 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
+//import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 
@@ -36,7 +36,7 @@ public class GameBoard extends Application implements Runnable{
 	private DataOutputStream dos;
 	private DataInputStream dis;
 	private ServerSocket serverSocket;
-	private boolean yourTurn = false;
+//	private boolean yourTurn = false;
 	private boolean circle = true;
 	private boolean accepted = false;
 	private boolean unableToCommunicateWithOpponent = false;
@@ -70,7 +70,6 @@ public class GameBoard extends Application implements Runnable{
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			//System.out.println("Trying to read info");
@@ -130,7 +129,8 @@ public class GameBoard extends Application implements Runnable{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		yourTurn = true;
+		
+//		yourTurn = true;
 		circle = false;
 
 		
