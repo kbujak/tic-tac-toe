@@ -50,12 +50,12 @@ public class NameCreator{
         root.setHgap(5);
         root.setVgap(15);
         root.setPadding(new Insets(15,15,15,15));
-        stage.setTitle("efwefwef");
+        stage.setTitle("Start game!");
         stage.setScene(scene);
         stage.show();
         
-        Label player1 = new Label("Player name");
-        Label player2 = new Label("Player2");
+        Label player1 = new Label("Your name: ");
+        Label player2 = new Label("Oponent name: ");
         root.add(player1, 0, 0);
         root.add(player2, 0, 1);        
 

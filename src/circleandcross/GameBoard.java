@@ -147,7 +147,7 @@ public class GameBoard extends Application implements Runnable{
 		root = new GridPane();
 
 		scene = new Scene(root, 800, 800);
-		//scene.getStylesheets().add(GameBoard.class.getResource("/CSS/GraphicSource.css").toExternalForm());
+		scene.getStylesheets().add(GameBoard.class.getResource("/CSS/GraphicSource.css").toExternalForm());
 
 		stage.setTitle("Kó³ko i krzy¿yk");
 		stage.setScene(scene);
@@ -175,14 +175,14 @@ public class GameBoard extends Application implements Runnable{
 
 		});
 		//game.start();
-		root.add(newGame, 1, 6, 2, 1);
+		root.add(newGame, 0, 17, 3, 2);
 
 		VBox scoreTable = new VBox(30);
 		scoreTable.setPadding(new Insets(15, 15, 15, 15));
 		scoreTable.setStyle("-fx-border-color: #000000;");
 		scoreTable.setMinHeight(200);
 		scoreTable.setMinWidth(400);
-		root.add(scoreTable, 0, 16, 3, 2);
+		root.add(scoreTable, 0, 20, 12, 2);
 
 		HBox p1Data = new HBox(80);
 		p1Data.getChildren().addAll(game.getPlayer(1).getScoreName(), game.getPlayer(1).getScoreLabel());
