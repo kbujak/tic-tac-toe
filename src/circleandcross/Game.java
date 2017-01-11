@@ -123,8 +123,10 @@ public class Game {
 			
 			//yourTurn = false;
 			int signInt = (sign == Sign.CIRCLE) ? 0 : 1;
-			if(checkBoard(signInt))
+			if(checkBoard(signInt)){
 				System.out.println("wygra³eœ");
+				clearBoard(); //jak zrobic zeby to czyscilo plansze obu playerom?
+			}
 			
 			p1.setTurn(false);
 			String info = "" + row + "&" + col;
@@ -236,28 +238,13 @@ public class Game {
             
             if(checkBoard(currentPlayer.getSign().ordinal())){
                 currentPlayer.addPoint();
-                for (Button btn: buttonList){
-                    btn.setText("");
-                }
-                
-                for(int i = 0; i < 15; i++){
-                    for(int j = 0; j < 15; j++){
-                        virtualBoard[i][j] = -1;
-                    }
-                }
+                clearBoard();
                 isPlayerWinner(currentPlayer);
                 turnCount = 0;
                 text = "";
                 
             }else if (turnCount >= 225){
-                for (Button btn: buttonList){
-                    btn.setText("");
-                }
-                for(int i = 0; i < 15; i++){
-                    for(int j = 0; j < 15; j++){
-                        virtualBoard[i][j] = -1;
-                    }
-                }
+            	clearBoard();
                 turnCount = 0;
                 text = "";
             }
@@ -266,7 +253,19 @@ public class Game {
         return text;
     }
     
-     boolean checkBoard(int signValue) {
+    private void clearBoard(){
+        for (Button btn: buttonList){
+            btn.setText("");
+        }
+        
+        for(int i = 0; i < 15; i++){
+            for(int j = 0; j < 15; j++){
+                virtualBoard[i][j] = -1;
+            }
+        }
+    }
+    
+    boolean checkBoard(int signValue) {
 
 		if (checkHorizontal(signValue) || checkVertical(signValue) || checkSkew(signValue))
 			return true;
