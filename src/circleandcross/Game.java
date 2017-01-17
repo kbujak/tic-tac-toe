@@ -25,6 +25,8 @@ public class Game {
     private Player p2;
     private List<Button> buttonList;
     private boolean gameStarted = false;
+    private boolean firstSent = true;
+    private boolean firstReceived = true;
     private int turnCount;
     int[][] virtualBoard = new int[15][15];
     
@@ -104,6 +106,8 @@ public class Game {
 	public void sendDataToSocket(int row, int col, DataOutputStream dos, Button btn) {
 		Sign sign = p1.getSign(); 
 		boolean yourTurn = p1.getTurn();
+                boolean gameState = false;
+                String info;
 		
 		if(yourTurn){
 			if (sign == Sign.CIRCLE) {
@@ -119,22 +123,39 @@ public class Game {
 
 //			int sign = (circle) ? 0 : 1;
 //			if (game.checkBoard(sign))
-//				System.out.println("wygra³eœ");
+//				System.out.println("wygraï¿½eï¿½");
 			
 			//yourTurn = false;
 			int signInt = (sign == Sign.CIRCLE) ? 0 : 1;
 			if(checkBoard(signInt)){
-				System.out.println("wygra³eœ");
+				System.out.println("wygraï¿½eï¿½");
 				clearBoard(); //jak zrobic zeby to czyscilo plansze obu playerom?
+                                gameState = true;
+                                p1.addPoint();
 			}
 			
 			p1.setTurn(false);
-			String info = "" + row + "&" + col;
+			if(!firstSent){
+                            info = "" + row + "&" + col;
+                        }else{
+                            info = "" + row + "&" + col + "&" + p1.getName();
+                            firstSent = false;
+                        }                        
 
 			try {
-				dos.writeUTF(info);
-				System.out.println("Wysy³am " + info);
-				dos.flush();
+                            if(gameState){
+                                if(!isPlayerWinner(p1)){
+                                    dos.writeUTF("clear");                                    
+                                }else{
+                                    dos.writeUTF("winner");
+                                    firstSent=true;
+                                    playerWins(p1);
+                                }
+                            }else{
+                                dos.writeUTF(info);
+                                System.out.println("Wysyï¿½am " + info);   
+                            }                            
+                            dos.flush();
 			} catch (IOException e) {
 				//errors++;
 				e.printStackTrace();
@@ -143,72 +164,105 @@ public class Game {
 
 	}
     
-    
-	public void getDataFromSocket(DataInputStream dis) {
-		Sign sign = p1.getSign();
-		boolean yourTurn = p1.getTurn();
+        
+        public void getDataFromSocket(DataInputStream dis) {
+        Sign sign = p1.getSign();
+        boolean yourTurn = p1.getTurn();
+ 
+        if (!yourTurn) {
+            try {
+                // odczytujï¿½ i rozkodowujï¿½ informacjï¿½
+                String info = dis.readUTF();
+                System.out.println(info);
+                if(info.equals("clear")){
+                    Platform.runLater(new Runnable() {
 
-		if (!yourTurn) {
-			try {
-				// odczytujê i rozkodowujê informacjê
-				String info = dis.readUTF();
-				String[] split = info.split("&");
-				// System.out.println("Odczyta³em " +info);
-				String rowRead = split[0];
-				String colRead = split[1];
+                        @Override
+                        public void run() {
+                            clearBoard();
+                            p2.addPoint();
+                        }
+                    });
+                }else if(info.equals("winner")){
+                    Platform.runLater(new Runnable() {
 
-				int row = Integer.parseInt(rowRead);
-				int col = Integer.parseInt(colRead);
+                        @Override
+                        public void run() {
+                            clearBoard();
+                            playerLose(p1);
+                        }
+                        
+                    });
+                    firstReceived = true;
+                }else{
+                String[] split = info.split("&");
+                // System.out.println("Odczytaï¿½em " +info);
+                String rowRead = split[0];
+                String colRead = split[1];
+                if(firstReceived){
+                    Platform.runLater(new Runnable() {
 
-				if (sign == Sign.CIRCLE) {
-					virtualBoard[row][col] = 1;
-					System.out.println("IFzaznaczam vB[" + row + "]" + "[" + col + "] --- " + 15 * row + col);
-					System.out.println(15 * row + col);
-
-					Platform.runLater(new Runnable() {
-						Button btn = buttonList.get(15 * col + row);
-
-						@Override
-						public void run() {
-							btn.setText("X");
-						}
-					});
-					
-					
-				}
-
-				else {
-					virtualBoard[row][col] = 0;
-					System.out.println("ELSEzaznaczam vB[" + row + "]" + "[" + col + "] --- ");
-					System.out.println(15 * col + row);
-
-					Platform.runLater(new Runnable() {
-						Button btn = buttonList.get(15 * col + row);
-
-						@Override
-						public void run() {
-							btn.setText("O");
-						}
-					});
-				}
-
-//				int sign = (circle) ? 0 : 1;
-//				if (game.checkBoard(sign))
-//					System.out.println("wygra³eœ");
-
-				//yourTurn = true;
-				int signInt = (sign == Sign.CIRCLE) ? 0 : 1;
-				if(checkBoard(signInt))
-					System.out.println("wygra³eœ");
-				
-				p1.setTurn(true);
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-				//errors++;
-			}
-		}
-	}
+                        @Override
+                        public void run() {
+                            p2.setName(split[2]);
+                        }
+                    });
+                    firstReceived = false;
+                }
+ 
+                int row = Integer.parseInt(rowRead);
+                int col = Integer.parseInt(colRead);
+ 
+                if (sign == Sign.CIRCLE) {
+                    virtualBoard[row][col] = 1;
+                    System.out.println(15 * row + col);
+ 
+                    Platform.runLater(new Runnable() {
+                        Button btn = buttonList.get(15 * col + row);
+ 
+                        @Override
+                        public void run() {
+                            btn.setText("X");
+                        }
+                    });
+                   
+                   
+                }
+ 
+                else {
+                    virtualBoard[row][col] = 0;
+                    System.out.println(15 * col + row);
+ 
+                    Platform.runLater(new Runnable() {
+                        Button btn = buttonList.get(15 * col + row);
+ 
+                        @Override
+                        public void run() {
+                            btn.setText("O");
+                        }
+                    });
+                }
+                                   
+                                }
+               
+ 
+//              int sign = (circle) ? 0 : 1;
+//              if (game.checkBoard(sign))
+//                  System.out.println("wygraï¿½eï¿½");
+ 
+                //yourTurn = true;
+                int signInt = (sign == Sign.CIRCLE) ? 0 : 1;
+                if(checkBoard(signInt))
+                    System.out.println("wygraï¿½eï¿½");
+               
+                p1.setTurn(true);
+               
+            } catch (IOException e) {
+                e.printStackTrace();
+                //errors++;
+            }
+        }
+    }
     
     
     
@@ -363,16 +417,31 @@ public class Game {
 		return false;
 	}
     
-    private void isPlayerWinner(Player player){
-        if (player.getScore() == 3){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Winner");
-            alert.setHeaderText(player.getName() + " wins this match");
-            alert.setContentText("Congratulations");
-            getPlayer(1).clear();
-            getPlayer(2).clear();
-            alert.showAndWait();
-            gameStarted = false;
+    private boolean isPlayerWinner(Player player){
+        if (player.getScore() == 1){
+            return true;
         }
+        return false;
     }
+    
+    private void playerWins(Player player){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Winner");
+        alert.setHeaderText(player.getName() + " wins this match");
+        alert.setContentText("Congratulations");
+        getPlayer(1).clear();
+        alert.showAndWait();
+        gameStarted = false;
+    }
+    
+    private void playerLose(Player player){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Loser");
+        alert.setHeaderText(getPlayer(2).getName() + " wins this match");
+        alert.setContentText("Try Again");
+        getPlayer(1).clear();
+        alert.showAndWait();
+        gameStarted = false;
+    }
+    
 }

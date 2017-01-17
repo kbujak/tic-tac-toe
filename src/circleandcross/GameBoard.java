@@ -149,7 +149,7 @@ public class GameBoard extends Application implements Runnable{
 		scene = new Scene(root, 800, 800);
 		scene.getStylesheets().add(GameBoard.class.getResource("/CSS/GraphicSource.css").toExternalForm());
 
-		stage.setTitle("KÛ≥ko i krzyøyk");
+		stage.setTitle("K√≥≈Çko i krzy≈ºyk");
 		stage.setScene(scene);
 		stage.centerOnScreen();
 		stage.show();
