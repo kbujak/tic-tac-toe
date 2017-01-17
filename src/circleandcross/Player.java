@@ -21,7 +21,7 @@ public class Player {
     
     public void setName(String name){
         this.name = name;
-        this.scoreName.setText(name + "(" + sign +") :");
+        this.scoreName.setText(name);
     }
     
     public String getName(){
