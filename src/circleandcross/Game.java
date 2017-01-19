@@ -24,18 +24,20 @@ public class Game {
 	private Player p1;
 	private Player p2;
 	private List<Button> buttonList;
-	private boolean gameStarted = false;
 	private boolean firstSent = true;
 	private boolean firstReceived = true;
 	private int turnCount;
 	int[][] virtualBoard = new int[15][15];
+	// #monostate
+	static private boolean gameStarted = false;
 
 
-	// Builder, budowniczy, wzorzec
+	// #builder
 	Game(List<Button> buttonList){
 		this.buttonList = buttonList;
 		p1 = new Player();
-		p2 = new Player();
+		// use of #prototype
+		p2 = p1.clone();
 		setBoard();
 	}
 
@@ -124,7 +126,6 @@ public class Game {
 				}                            
 				dos.flush();
 			} catch (IOException e) {
-				//errors++;
 				e.printStackTrace();
 			}
 		}

@@ -36,15 +36,14 @@ public class GameBoard extends Application implements Runnable{
 	private DataOutputStream dos;
 	private DataInputStream dis;
 	private ServerSocket serverSocket;
-//	private boolean yourTurn = false;
 	private boolean circle = true;
 	private boolean accepted = false;
 	private boolean unableToCommunicateWithOpponent = false;
 	private Thread thread;
 	private int errors = 0;
-	
 
-	
+
+
 	public GameBoard(){
 		Platform.setImplicitExit(false);
 		System.out.println("Please input the IP: ");
@@ -57,24 +56,22 @@ public class GameBoard extends Application implements Runnable{
 			System.out.println("The port you entered was invalid, please input another port: ");
 			port = scanner.nextInt();
 		}
-		
+
 		if (!connect()) initializeServer();
 		thread = new Thread(this, "TicTacToe");
 		thread.start();
-		
+
 	}
-	
+
 	public void run() {
 		while (true) {
-			
+
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			//System.out.println("Trying to read info");
-			//System.out.println(circle);
-
+			
 			tick();
 			if (!circle && !accepted) {
 				listenForServerRequest();
@@ -83,19 +80,15 @@ public class GameBoard extends Application implements Runnable{
 		}
 	}
 
-	
+
 	private void tick() {
 		if (errors >= 10) unableToCommunicateWithOpponent = true;
 
 		if (!unableToCommunicateWithOpponent) {
-			
 			game.getDataFromSocket(dis);
-			
-			
-			
 		}
 	}
-	
+
 	private void listenForServerRequest() {
 		Socket socket = null;
 		try {
@@ -108,7 +101,7 @@ public class GameBoard extends Application implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	
+
 	private boolean connect() {
 		try {
 			socket = new Socket(ip, port);
@@ -129,19 +122,15 @@ public class GameBoard extends Application implements Runnable{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-//		yourTurn = true;
-		circle = false;
 
-		
-		//sets player1 as cross
+		circle = false;
 		game.initializePlayerServer();
-		
+
 	}
-	
-	
-	
-	
+
+
+
+
 	@Override
 	public void start(Stage stage) throws Exception {
 		root = new GridPane();
@@ -160,8 +149,6 @@ public class GameBoard extends Application implements Runnable{
 			}
 		}
 
-		//game = new Game(buttonList);
-
 		Button newGame = new Button("New Game");
 		newGame.setId("newGameBtn");
 		newGame.setMinWidth(100);
@@ -174,7 +161,6 @@ public class GameBoard extends Application implements Runnable{
 			}
 
 		});
-		//game.start();
 		root.add(newGame, 0, 17, 3, 2);
 
 		VBox scoreTable = new VBox(30);

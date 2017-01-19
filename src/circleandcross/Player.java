@@ -19,6 +19,15 @@ public class Player {
 	private int score;
 	private Label scoreLabel = new Label("Score: " + String.valueOf(score));
 
+	// #prototype
+	public Player clone(){
+		Player newOne = new Player();
+		newOne.setName(this.getName());
+		newOne.setSign(this.getSign());
+		newOne.setTurn(this.getTurn());
+		return newOne;
+	}
+	
 	public void setName(String name){
 		this.name = name;
 		this.scoreName.setText(name);

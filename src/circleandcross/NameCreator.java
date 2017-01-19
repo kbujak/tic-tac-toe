@@ -34,6 +34,7 @@ public class NameCreator{
 	final private Player p1;
 	final private Player p2;
 
+	// #builder
 	public NameCreator(Player p1, Player p2) {
 		stage = new Stage();
 		root = new GridPane();
