@@ -25,8 +25,8 @@ public class Player {
 		newOne.setName(this.getName());
 		newOne.setSign(this.getSign());
 		newOne.setTurn(this.getTurn());
-		newOne.setScoreLabel(this.getScoreLabel());
-		newOne.setScoreName(this.getScoreName());
+		newOne.setScoreLabel();
+		newOne.setScoreName();
 		newOne.setScore(this.getScore());
 		return newOne;
 	}
@@ -35,12 +35,12 @@ public class Player {
 		this.score = score2;
 	}
 
-	private void setScoreName(Label scoreName2) {
-		this.scoreName = scoreName2;
+	private void setScoreName() {
+		this.scoreName = new Label("Player Name");
 	}
 
-	private void setScoreLabel(Label scoreLabel2) {
-		this.scoreLabel = scoreLabel2;
+	private void setScoreLabel() {
+		this.scoreLabel = new Label("Score: " + String.valueOf(score));
 	}
 
 	public void setName(String name){
