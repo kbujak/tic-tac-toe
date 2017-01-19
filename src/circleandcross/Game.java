@@ -30,7 +30,17 @@ public class Game {
 	int[][] virtualBoard = new int[15][15];
 	// #monostate
 	static private boolean gameStarted = false;
+	private static Game instance;
 
+	// #singletone
+	public static Game getInstance(List<Button> buttonList2){
+		if(instance != null) {
+			return instance;
+		} else {
+			instance = new Game(buttonList2);
+			return instance;
+		}
+	}
 
 	// #builder
 	Game(List<Button> buttonList){

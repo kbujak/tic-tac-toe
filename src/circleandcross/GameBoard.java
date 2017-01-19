@@ -27,7 +27,8 @@ public class GameBoard extends Application implements Runnable{
 	private List<Button> buttonList = new ArrayList<>();
 	private Scene scene;
 	private GridPane root;
-	private Game game = new Game(buttonList);
+	//private Game game = new Game(buttonList);
+	private Game game = Game.getInstance(buttonList);
 
 	private String ip = "localhost";
 	private int port = 22222;
