@@ -139,7 +139,6 @@ public class Game {
 						dos.writeUTF("clear");                                    
 					}else{
 						dos.writeUTF("winner");
-						firstSent=true;
 						playerWins(p1);
 					}
 				}else{
@@ -246,49 +245,6 @@ public class Game {
 				e.printStackTrace();
 			}
 		}
-	}
-
-
-
-	public String makeTurn(String text, int row, int col, boolean circle){
-		if (text.equals("")){
-
-			turnCount++;
-			Player currentPlayer;
-			Player otherPlayer;
-			if (getPlayer(1).getTurn()){
-				currentPlayer = getPlayer(1);
-				otherPlayer = getPlayer(2);
-			}else{
-				currentPlayer = getPlayer(2);
-				otherPlayer = getPlayer(1);
-			}
-			if (currentPlayer.getSign() == Sign.CIRCLE){
-				text = "O";
-				virtualBoard[row][col] = 0;
-			}else{
-				text = "X";
-				virtualBoard[row][col] = 1;
-			}
-
-			currentPlayer.setTurn(false);
-			otherPlayer.setTurn(true);
-
-			if(checkBoard(currentPlayer.getSign().ordinal())){
-				currentPlayer.addPoint();
-				clearBoard();
-				isPlayerWinner(currentPlayer);
-				turnCount = 0;
-				text = "";
-
-			}else if (turnCount >= 225){
-				clearBoard();
-				turnCount = 0;
-				text = "";
-			}
-
-		}
-		return text;
 	}
 
 	private void clearBoard(){
@@ -402,7 +358,7 @@ public class Game {
 	}
 
 	private boolean isPlayerWinner(Player player){
-		if (player.getScore() == 1){
+		if (player.getScore() == 3){
 			return true;
 		}
 		return false;
@@ -414,6 +370,9 @@ public class Game {
 		alert.setHeaderText(player.getName() + " wins this match");
 		alert.setContentText("Congratulations");
 		getPlayer(1).clear();
+                getPlayer(2).clear();
+                firstSent=true;
+                firstReceived = true;
 		alert.showAndWait();
 		gameStarted = false;
 	}
@@ -424,6 +383,9 @@ public class Game {
 		alert.setHeaderText(getPlayer(2).getName() + " wins this match");
 		alert.setContentText("Try Again");
 		getPlayer(1).clear();
+                getPlayer(2).clear();
+                firstSent=true;
+                firstReceived = true;
 		alert.showAndWait();
 		gameStarted = false;
 	}
