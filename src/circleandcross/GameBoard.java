@@ -13,8 +13,11 @@ import java.util.Scanner;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -42,25 +45,74 @@ public class GameBoard extends Application implements Runnable{
 	private boolean unableToCommunicateWithOpponent = false;
 	private Thread thread;
 	private int errors = 0;
+	private boolean threadEnable = false;
 
 
 
 	public GameBoard(){
 		Platform.setImplicitExit(false);
-		System.out.println("Please input the IP: ");
-		//ip = scanner.nextLine();
-		ip = "localhost";
-		System.out.println("Please input the port: ");
-		//port = scanner.nextInt();
-		port = 6004;
-		while (port < 1 || port > 65535) {
-			System.out.println("The port you entered was invalid, please input another port: ");
-			port = scanner.nextInt();
-		}
+		
+		Stage ipStage = new Stage();
+		GridPane ipGridPane = new GridPane();
+		Scene ipScene = new Scene(ipGridPane,400,150);
+		
+		TextField ipTextField = new TextField();
+		TextField portField = new TextField();
+		
+		ipStage.setAlwaysOnTop(true);
+		ipGridPane.setHgap(5);
+		ipGridPane.setVgap(15);
+		ipGridPane.setPadding(new Insets(15,15,15,15));
+		ipStage.setTitle("Connect yourself!");
+		ipStage.setScene(ipScene);
+		ipStage.show();
+		
+		Label ipName = new Label("Adres ip:");
+		Label portName = new Label("Port: ");
+		
+		ipGridPane.add(ipName, 0, 0);
+		ipGridPane.add(portName, 0, 1);
+		
+		ipGridPane.add(ipTextField, 1, 0);
+		ipGridPane.add(portField, 1, 1);
+		
+		ipTextField.setText("localhost");
+		portField.setText("6011");
+		
+		
+		Button btn = new Button("Accept");
+		
+		btn.setOnMouseClicked(new EventHandler<MouseEvent>(){
+			@Override
+			public void handle(MouseEvent event) {
+				String ipChosen = ipTextField.getText();
+				int portChosen = Integer.parseInt(portField.getText());
+				
+				
+				if (portChosen > 1 && portChosen < 65535 ){
+					ip = ipChosen;
+					port = portChosen;
+					ipStage.close();
+					
+					if (!connect()) initializeServer();
+					threadEnable = true;
+					
+				}else{
+					
+					
+				}
+			}
 
-		if (!connect()) initializeServer();
+		});
+
+		VBox vbtn = new VBox(10);
+		vbtn.getChildren().add(btn);
+		vbtn.setAlignment(Pos.CENTER);
+		ipGridPane.add(vbtn, 1, 2,2, 1);
+		
 		thread = new Thread(this, "TicTacToe");
 		thread.start();
+		
 
 	}
 
@@ -72,11 +124,13 @@ public class GameBoard extends Application implements Runnable{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
-			tick();
-			if (!circle && !accepted) {
-				listenForServerRequest();
+			if(threadEnable){
+				tick();
+				if (!circle && !accepted) {
+					listenForServerRequest();
+				}
 			}
+			
 
 		}
 	}
@@ -126,6 +180,7 @@ public class GameBoard extends Application implements Runnable{
 
 		circle = false;
 		game.initializePlayerServer();
+		
 
 	}
 

@@ -92,16 +92,28 @@ public class Game {
 		boolean gameState = false;
 		String info;
 
+		System.out.println("tura: " + yourTurn);
 		if(yourTurn){
 			if (sign == Sign.CIRCLE) {
-				virtualBoard[row][col] = 0;
-				btn.setText("O");
+				if(virtualBoard[row][col] == -1)
+				{
+					virtualBoard[row][col] = 0;
+					btn.setText("O");
+				}
+				else
+					return;
+				
 
 			}
 
 			else {
-				virtualBoard[row][col] = 1;
-				btn.setText("X");
+				if (virtualBoard[row][col] == -1) {
+					virtualBoard[row][col] = 1;
+					btn.setText("X");
+				}
+				else
+					return;
+				
 			}
 
 
@@ -147,6 +159,7 @@ public class Game {
 		Sign sign = p1.getSign();
 		boolean yourTurn = p1.getTurn();
 
+		System.out.println("jestem tutaj");
 		if (!yourTurn) {
 			try {
 				// odczytuj� i rozkodowuj� informacj�
