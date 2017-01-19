@@ -10,6 +10,6 @@ package circleandcross;
  * @author Bujag
  */
 public enum Sign {
-    CIRCLE,
-    CROSS
+	CIRCLE,
+	CROSS
 }
