@@ -25,9 +25,24 @@ public class Player {
 		newOne.setName(this.getName());
 		newOne.setSign(this.getSign());
 		newOne.setTurn(this.getTurn());
+		newOne.setScoreLabel(this.getScoreLabel());
+		newOne.setScoreName(this.getScoreName());
+		newOne.setScore(this.getScore());
 		return newOne;
 	}
 	
+	private void setScore(int score2) {
+		this.score = score2;
+	}
+
+	private void setScoreName(Label scoreName2) {
+		this.scoreName = scoreName2;
+	}
+
+	private void setScoreLabel(Label scoreLabel2) {
+		this.scoreLabel = scoreLabel2;
+	}
+
 	public void setName(String name){
 		this.name = name;
 		this.scoreName.setText(name);
