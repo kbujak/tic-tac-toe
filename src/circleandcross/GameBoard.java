@@ -33,8 +33,8 @@ public class GameBoard extends Application implements Runnable{
 	//private Game game = new Game(buttonList);
 	private Game game = Game.getInstance(buttonList);
 
-	private String ip = "localhost";
-	private int port = 22222;
+	private String ip;
+	private int port;
 	private Scanner scanner = new Scanner(System.in);
 	private Socket socket;
 	private DataOutputStream dos;
