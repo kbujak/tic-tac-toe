@@ -33,8 +33,8 @@ public class GameBoard extends Application implements Runnable{
 	//private Game game = new Game(buttonList);
 	private Game game = Game.getInstance(buttonList);
 
-	private String ip;
-	private int port;
+	private String ip = "localhost";
+	private int port = 22222;
 	private Scanner scanner = new Scanner(System.in);
 	private Socket socket;
 	private DataOutputStream dos;
@@ -46,6 +46,7 @@ public class GameBoard extends Application implements Runnable{
 	private Thread thread;
 	private int errors = 0;
 	private boolean threadEnable = false;
+	private Label infoLabel;
 
 
 
@@ -152,6 +153,7 @@ public class GameBoard extends Application implements Runnable{
 			dis = new DataInputStream(socket.getInputStream());
 			accepted = true;
 			System.out.println("CLIENT HAS REQUESTED TO JOIN, AND WE HAVE ACCEPTED");
+			infoLabel.setText("Client requested to join and we have accepted");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -165,9 +167,11 @@ public class GameBoard extends Application implements Runnable{
 			accepted = true;
 		} catch (IOException e) {
 			System.out.println("Unable to connect to the address: " + ip + ":" + port + " | Starting a server");
+			infoLabel.setText("Starting a server - ip: " + ip + " port: " + port);
 			return false;
 		}
 		System.out.println("Successfully connected to the server.");
+		infoLabel.setText("Successfully connected to the server.");
 		return true;
 	}
 
@@ -205,6 +209,8 @@ public class GameBoard extends Application implements Runnable{
 			}
 		}
 
+		infoLabel = new Label("Waiting for opponent");
+		
 		Button newGame = new Button("New Game");
 		newGame.setId("newGameBtn");
 		newGame.setMinWidth(100);
@@ -218,6 +224,8 @@ public class GameBoard extends Application implements Runnable{
 
 		});
 		root.add(newGame, 0, 17, 3, 2);
+		root.add(infoLabel, 4, 18, 8, 2);
+		
 
 		VBox scoreTable = new VBox(30);
 		scoreTable.setPadding(new Insets(15, 15, 15, 15));
@@ -225,6 +233,7 @@ public class GameBoard extends Application implements Runnable{
 		scoreTable.setMinHeight(200);
 		scoreTable.setMinWidth(400);
 		root.add(scoreTable, 0, 20, 12, 2);
+		
 
 		HBox p1Data = new HBox(80);
 		p1Data.getChildren().addAll(game.getPlayer(1).getScoreName(), game.getPlayer(1).getScoreLabel());
